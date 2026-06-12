@@ -1,0 +1,5 @@
+1. Xcodeで StepHealth.xcodeproj を開く
+2. Signing & Capabilities で Team を設定
+3. Bundle Identifier を固有の値に変更
+4. HealthKit Capability が有効か確認
+5. 実機で初回起動し、ヘルスケア権限を許可

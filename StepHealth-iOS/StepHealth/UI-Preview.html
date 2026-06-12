@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>歩数自動取得アプリ UI モック</title>
+  <style>
+    :root {
+      --bg: #eef4ff;
+      --card: rgba(255,255,255,0.82);
+      --card-strong: #ffffff;
+      --line: #d9e3f6;
+      --text: #14213d;
+      --muted: #6b7a99;
+      --primary: #2563eb;
+      --primary-2: #4f46e5;
+      --ok: #059669;
+      --warn: #d97706;
+      --danger: #dc2626;
+      --shadow: 0 18px 40px rgba(37, 99, 235, 0.12);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(79,70,229,.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(37,99,235,.18), transparent 32%),
+        linear-gradient(180deg, #f5f9ff 0%, var(--bg) 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px 14px 40px;
+    }
+
+    .shell {
+      max-width: 430px;
+      margin: 0 auto;
+      background: rgba(255,255,255,.3);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,.5);
+      border-radius: 36px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .statusbar {
+      padding: 12px 18px 4px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .screen {
+      display: none;
+      min-height: 780px;
+      padding: 12px 16px 110px;
+    }
+    .screen.active { display: block; }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin: 10px 0 18px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(37,99,235,.10);
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .02em;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: 28px; line-height: 1.15; margin-top: 10px; }
+    h2 { font-size: 19px; margin-bottom: 8px; }
+    h3 { font-size: 15px; }
+    .sub { color: var(--muted); line-height: 1.55; margin-top: 8px; font-size: 13px; }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.75);
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      box-shadow: 0 8px 18px rgba(20,33,61,.06);
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(217,227,246,.9);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 30px rgba(20,33,61,.06);
+      padding: 16px;
+      margin-bottom: 14px;
+      backdrop-filter: blur(14px);
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+      color: white;
+      padding: 18px;
+      border-radius: 28px;
+      box-shadow: 0 20px 40px rgba(79,70,229,.25);
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -20px;
+      top: -20px;
+      width: 140px;
+      height: 140px;
+      background: radial-gradient(circle, rgba(255,255,255,.20), transparent 70%);
+    }
+    .hero .label { font-size: 13px; opacity: .86; }
+    .hero .value { font-size: 42px; font-weight: 900; margin-top: 8px; letter-spacing: -.03em; }
+    .hero .foot { margin-top: 14px; display: flex; justify-content: space-between; gap: 12px; font-size: 12px; opacity: .92; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .metric {
+      background: var(--card-strong);
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      padding: 16px;
+      box-shadow: 0 10px 24px rgba(20,33,61,.05);
+    }
+    .metric .k { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+    .metric .v { font-size: 26px; font-weight: 900; }
+    .metric .t { font-size: 12px; color: var(--ok); margin-top: 8px; font-weight: 700; }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pill {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: #ecfdf5;
+      color: #047857;
+    }
+
+    .sync-box {
+      display: grid;
+      gap: 10px;
+    }
+
+    .sync-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 13px;
+    }
+
+    .btn {
+      width: 100%;
+      border: 0;
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      color: white;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-2) 100%);
+      box-shadow: 0 14px 24px rgba(37,99,235,.25);
+    }
+    .btn.secondary {
+      color: var(--primary);
+      background: #eff6ff;
+      box-shadow: none;
+      border: 1px solid #bfdbfe;
+    }
+
+    .progress {
+      height: 10px;
+      border-radius: 999px;
+      background: #e5ecfb;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+    .progress > span {
+      display: block;
+      width: 68%;
+      height: 100%;
+      background: linear-gradient(90deg, #22c55e, #2563eb);
+      border-radius: inherit;
+    }
+
+    .list { display: grid; gap: 10px; }
+    .item {
+      background: rgba(255,255,255,.9);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .item .meta { color: var(--muted); font-size: 12px; margin-top: 5px; }
+    .item .value { font-size: 18px; font-weight: 900; }
+
+    .chart {
+      height: 180px;
+      padding: 10px 0 0;
+    }
+    .bars {
+      height: 132px;
+      display: flex;
+      align-items: end;
+      gap: 10px;
+    }
+    .bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .bar {
+      width: 100%;
+      border-radius: 14px 14px 6px 6px;
+      background: linear-gradient(180deg, #60a5fa, #2563eb);
+      box-shadow: inset 0 -6px 10px rgba(255,255,255,.15);
+    }
+    .bar-col small { color: var(--muted); font-size: 11px; }
+
+    .segmented {
+      display: inline-grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      background: #eef3ff;
+      padding: 5px;
+      border-radius: 15px;
+      margin-bottom: 14px;
+      width: 100%;
+    }
+    .segmented button {
+      border: 0;
+      background: transparent;
+      padding: 10px 0;
+      border-radius: 11px;
+      font-weight: 800;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .segmented button.active {
+      background: white;
+      color: var(--primary);
+      box-shadow: 0 4px 12px rgba(20,33,61,.08);
+    }
+
+    .setting-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid #edf2fb;
+    }
+    .setting-row:last-child { border-bottom: 0; }
+    .setting-title { font-weight: 700; }
+    .setting-desc { font-size: 12px; color: var(--muted); margin-top: 5px; }
+
+    .toggle {
+      width: 50px;
+      height: 30px;
+      border-radius: 999px;
+      background: #bfdbfe;
+      position: relative;
+      flex: 0 0 auto;
+    }
+    .toggle::after {
+      content: "";
+      position: absolute;
+      top: 4px;
+      left: 24px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 2px 8px rgba(20,33,61,.15);
+    }
+
+    .badge-warn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: #fff7ed;
+      color: var(--warn);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .nav {
+      position: sticky;
+      bottom: 0;
+      background: rgba(255,255,255,.88);
+      backdrop-filter: blur(14px);
+      border-top: 1px solid rgba(217,227,246,.9);
+      padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .nav button {
+      border: 0;
+      background: transparent;
+      border-radius: 16px;
+      padding: 10px 6px;
+      color: var(--muted);
+      display: grid;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .nav button.active {
+      color: var(--primary);
+      background: #eff6ff;
+    }
+    .nav .emoji { font-size: 18px; }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="statusbar">
+      <div>9:41</div>
+      <div>UI Mock / Step Health</div>
+    </div>
+
+    <section class="screen active" id="screen-home">
+      <div class="topbar">
+        <div>
+          <div class="eyebrow">● HealthKit / Health Connect 接続済み</div>
+          <h1>今日も
+            <br>しっかり歩けてる</h1>
+          <p class="sub">端末のヘルスデータから日次歩数を再取得して保存し、総累計を安全に再集計するUI。</p>
+        </div>
+        <button class="icon-btn">🔔</button>
+      </div>
+
+      <div class="hero">
+        <div class="label">今日の歩数</div>
+        <div class="value">6,842 歩</div>
+        <div class="foot">
+          <div>目標 10,000 歩</div>
+          <div>達成率 68%</div>
+        </div>
+        <div class="progress"><span></span></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="metric">
+          <div class="k">総累計</div>
+          <div class="v">184,290</div>
+          <div class="t">+6,842 今日加算反映</div>
+        </div>
+        <div class="metric">
+          <div class="k">直近7日</div>
+          <div class="v">48,503</div>
+          <div class="t">平均 6,929 /日</div>
+        </div>
+        <div class="metric">
+          <div class="k">今月</div>
+          <div class="v">92,114</div>
+          <div class="t">先月比 +12%</div>
+        </div>
+        <div class="metric">
+          <div class="k">連続達成</div>
+          <div class="v">4 日</div>
+          <div class="t">いい感じ</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row" style="margin-bottom:12px">
+          <div>
+            <h2>同期ステータス</h2>
+            <p class="sub">差分加算ではなく、日次総量を再取得して上書き保存</p>
+          </div>
+          <span class="pill">安全な再集計</span>
+        </div>
+        <div class="sync-box">
+          <div class="sync-line"><span>権限状態</span><strong style="color:var(--ok)">許可済み</strong></div>
+          <div class="sync-line"><span>データソース</span><strong>iPhone / Apple Watch</strong></div>
+          <div class="sync-line"><span>最終同期</span><strong>2026-06-11 13:38</strong></div>
+          <div class="sync-line"><span>重複加算対策</span><strong>日別上書き保存</strong></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
+          <button class="btn">今すぐ同期</button>
+          <button class="btn secondary">履歴を再取得</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row" style="margin-bottom:12px">
+          <div>
+            <h2>直近の履歴</h2>
+            <p class="sub">日別保存済みデータ</p>
+          </div>
+          <button class="icon-btn" style="width:38px;height:38px">›</button>
+        </div>
+        <div class="list">
+          <div class="item">
+            <div>
+              <strong>2026-06-11</strong>
+              <div class="meta">最終同期 13:38 / ソース: HealthKit</div>
+            </div>
+            <div class="value">6,842</div>
+          </div>
+          <div class="item">
+            <div>
+              <strong>2026-06-10</strong>
+              <div class="meta">最終同期 13:38 / ソース: HealthKit</div>
+            </div>
+            <div class="value">8,120</div>
+          </div>
+          <div class="item">
+            <div>
+              <strong>2026-06-09</strong>
+              <div class="meta">最終同期 13:38 / ソース: HealthKit</div>
+            </div>
+            <div class="value">7,934</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-history">
+      <div class="topbar">
+        <div>
+          <div class="eyebrow">日別保存データ</div>
+          <h1>履歴</h1>
+          <p class="sub">端末ヘルスデータから取得した日次歩数の保存結果。</p>
+        </div>
+        <button class="icon-btn">⤓</button>
+      </div>
+
+      <div class="segmented">
+        <button class="active">7日</button>
+        <button>30日</button>
+        <button>全期間</button>
+      </div>
+
+      <div class="card">
+        <div class="list">
+          <div class="item"><div><strong>2026-06-11</strong><div class="meta">iPhone / Apple Watch</div></div><div class="value">6,842</div></div>
+          <div class="item"><div><strong>2026-06-10</strong><div class="meta">iPhone / Apple Watch</div></div><div class="value">8,120</div></div>
+          <div class="item"><div><strong>2026-06-09</strong><div class="meta">iPhone / Apple Watch</div></div><div class="value">7,934</div></div>
+          <div class="item"><div><strong>2026-06-08</strong><div class="meta">iPhone / Apple Watch</div></div><div class="value">5,942</div></div>
+          <div class="item"><div><strong>2026-06-07</strong><div class="meta">iPhone / Apple Watch</div></div><div class="value">9,115</div></div>
+          <div class="item"><div><strong>2026-06-06</strong><div class="meta">iPhone / Apple Watch</div></div><div class="value">4,826</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row" style="margin-bottom:10px">
+          <div>
+            <h2>履歴操作</h2>
+            <p class="sub">特定日の再取得や補正用の導線</p>
+          </div>
+        </div>
+        <div style="display:grid;gap:10px">
+          <button class="btn">選択期間を再同期</button>
+          <button class="btn secondary">手動補正を追加</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-graph">
+      <div class="topbar">
+        <div>
+          <div class="eyebrow">可視化</div>
+          <h1>グラフ</h1>
+          <p class="sub">日次保存済みデータから再集計した表示。</p>
+        </div>
+        <button class="icon-btn">📈</button>
+      </div>
+
+      <div class="card">
+        <div class="row" style="margin-bottom:8px">
+          <h2>7日推移</h2>
+          <span class="pill">平均 6,929 /日</span>
+        </div>
+        <div class="chart">
+          <div class="bars">
+            <div class="bar-col"><div class="bar" style="height:56px"></div><small>木</small></div>
+            <div class="bar-col"><div class="bar" style="height:82px"></div><small>金</small></div>
+            <div class="bar-col"><div class="bar" style="height:48px"></div><small>土</small></div>
+            <div class="bar-col"><div class="bar" style="height:98px"></div><small>日</small></div>
+            <div class="bar-col"><div class="bar" style="height:63px"></div><small>月</small></div>
+            <div class="bar-col"><div class="bar" style="height:86px"></div><small>火</small></div>
+            <div class="bar-col"><div class="bar" style="height:72px"></div><small>水</small></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="metric">
+          <div class="k">最高歩数日</div>
+          <div class="v">9,115</div>
+          <div class="t">2026-06-07</div>
+        </div>
+        <div class="metric">
+          <div class="k">最低歩数日</div>
+          <div class="v">4,826</div>
+          <div class="t">2026-06-06</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row" style="margin-bottom:10px">
+          <div>
+            <h2>累計メモ</h2>
+            <p class="sub">表示値は保存済み日別データを合算して生成</p>
+          </div>
+          <span class="badge-warn">差分依存なし</span>
+        </div>
+        <p class="sub">日次データを再取得して上書きするため、ヘルスデータ側の再集約や端末差分があっても二重加算しにくい構成。</p>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-settings">
+      <div class="topbar">
+        <div>
+          <div class="eyebrow">設定と権限</div>
+          <h1>設定</h1>
+          <p class="sub">HealthKit / Health Connect の接続と保存方針。</p>
+        </div>
+        <button class="icon-btn">⚙️</button>
+      </div>
+
+      <div class="card">
+        <div class="setting-row">
+          <div>
+            <div class="setting-title">ヘルスデータアクセス</div>
+            <div class="setting-desc">歩数データの読み取り権限</div>
+          </div>
+          <span class="pill">許可済み</span>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-title">起動時に自動同期</div>
+            <div class="setting-desc">アプリ復帰時も再取得</div>
+          </div>
+          <div class="toggle"></div>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-title">目標歩数</div>
+            <div class="setting-desc">1日 10,000 歩</div>
+          </div>
+          <strong>変更</strong>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-title">保存方式</div>
+            <div class="setting-desc">日別保存・再集計</div>
+          </div>
+          <strong>固定</strong>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 style="margin-bottom:10px">メンテナンス</h2>
+        <div style="display:grid;gap:10px">
+          <button class="btn">全期間を再同期</button>
+          <button class="btn secondary">ローカルデータを再構築</button>
+          <button class="btn secondary" style="color:var(--danger);border-color:#fecaca;background:#fef2f2">保存データを初期化</button>
+        </div>
+      </div>
+    </section>
+
+    <nav class="nav">
+      <button class="active" data-target="screen-home"><span class="emoji">🏠</span><span>ホーム</span></button>
+      <button data-target="screen-history"><span class="emoji">🗓️</span><span>履歴</span></button>
+      <button data-target="screen-graph"><span class="emoji">📊</span><span>グラフ</span></button>
+      <button data-target="screen-settings"><span class="emoji">⚙️</span><span>設定</span></button>
+    </nav>
+  </div>
+
+  <script>
+    const navButtons = document.querySelectorAll('.nav button');
+    const screens = document.querySelectorAll('.screen');
+
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        navButtons.forEach(b => b.classList.remove('active'));
+        screens.forEach(s => s.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.target).classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

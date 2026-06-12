@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDisplayName</key>
+    <string>StepHealth</string>
+    <key>NSHealthShareUsageDescription</key>
+    <string>歩数データを読み取り、日別保存と累計表示に利用します。</string>
+    <key>NSMotionUsageDescription</key>
+    <string>歩数のライブ更新可否を確認するためにモーション情報を利用します。</string>
+    <key>UIApplicationSceneManifest</key>
+    <dict>
+        <key>UIApplicationSupportsMultipleScenes</key>
+        <false/>
+    </dict>
+</dict>
+</plist>

@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">StepHealth</string>
+    <string name="sync_permission">権限を許可</string>
+    <string name="sync_now">今すぐ同期</string>
+</resources>
